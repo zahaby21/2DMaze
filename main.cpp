@@ -9,6 +9,7 @@
 #include <cstdlib>
 using namespace std;
 
+// Struct to represent a cell in the maze
 struct Cell {
     int x, y;
     bool obstacle;
@@ -16,17 +17,21 @@ struct Cell {
     int distance;
     Cell* previous;
 
+    // Constructor for Cell struct
     Cell(int x, int y) : x(x), y(y), obstacle(false), visited(false), distance(numeric_limits<int>::max()), previous(nullptr) {}
 };
 
+// Class representing the maze game, inheriting from QWidget
 class MazeGame : public QWidget {
 public:
+    // Constructor for MazeGame class
     MazeGame(QWidget* parent = nullptr) : QWidget(parent), rows(10), cols(10), cellSize(30), playerX(0), playerY(0), goalX(9), goalY(9) {
-        generateMaze();
-        calculateShortestPath();
+        generateMaze();  // Generate the maze
+        calculateShortestPath();  // Calculate the shortest path using Dijkstra's algorithm
     }
 
 protected:
+    // Override keyPressEvent to handle key presses for player movement
     void keyPressEvent(QKeyEvent* event) override {
         switch (event->key()) {
         case Qt::Key_Up:
@@ -53,6 +58,7 @@ protected:
         }
     }
 
+    // Override paintEvent to handle painting the maze and player
     void paintEvent(QPaintEvent* event) override {
         QPainter painter(this);
         for (int i = 0; i < rows; ++i) {
@@ -94,6 +100,7 @@ private:
     vector<vector<Cell>> maze;
     QPolygonF playerShape{{0, 0}, {-10, 20}, {10, 20}};
 
+    // Function to generate the maze
     void generateMaze() {
         maze.resize(rows, vector<Cell>(cols, Cell(0, 0)));
 
@@ -107,6 +114,7 @@ private:
         }
     }
 
+    // Function to calculate the shortest path using Dijkstra's algorithm
     void calculateShortestPath() {
         priority_queue<Cell*, vector<Cell*>, Comparator> pq;
         Cell* start = &maze[0][0];
@@ -146,6 +154,7 @@ private:
         }
     }
 
+    // Function to move the player to a new position
     void movePlayer(int newX, int newY) {
         if (newX >= 0 && newX < cols && newY >= 0 && newY < rows && !maze[newY][newX].obstacle) {
             playerX = newX;
@@ -154,6 +163,7 @@ private:
         }
     }
 
+    // Comparator struct for priority_queue in calculateShortestPath
     struct Comparator {
         bool operator()(const Cell* a, const Cell* b) {
             return a->distance > b->distance;
@@ -161,6 +171,7 @@ private:
     };
 };
 
+// Main function to create the application and run the maze game
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
